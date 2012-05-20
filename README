@@ -1,0 +1,16 @@
+SmallVM is just that, a small virtual machine with focus on educating others about virtual machines.
+
+It is written in ANSI C and is fairly documented.
+
+Features:
+* Portable - Builds on almost any platform with an ANSI C compiler
+* Full instruction set - Includes mathematical instructions, memory and register modifiers, jumps, and conditionals
+* Documented - LOTS of comments
+* Easy to modify - Changing the amount of registers or memory size is easy
+* Under the MIT license - Please read the file LICENSE in this directory
+
+How to build:
+
+git clone git@github.com:andyrothtech/SmallVM.git
+cd smallvm
+make

@@ -1,0 +1,113 @@
+This is the format of the bytecode used by SmallVM.
+
+A typical hexadecimal instruction looks like this:
+
+0x01002008
+
+Let's pick this apart...
+
+Starting from the beginning, we can decode this instruction
+
+01 is the opcode. Opcodes can only be one byte or two hex digits.
+002 is the "A" argument. Arguments are always 12 bits or 3 hex digits.
+006 is the "B" argument. Arguments are always 12 bits or 3 hex digits.
+
+So now, we can tell that 01 is being called with the arguments 002 and 006.
+
+As we can see in opcodes.h, the value 0x01, or 01, is the opcode for the SET
+instruction. Now we know that SET is being called on two values, 002, and 006.
+
+The arguments take a little more work decoding...
+
+For any value below 0x05, the value means the contents in the register. Register
+values start at 0x00 and end at 0x04. 0x00 is A, 0x01 is B, and so on until
+register E, which is 0x04. This means that the first argument, 002 means, the
+value in register C.
+
+WARNING: Do not mix up arguments A and B with registers A and B
+
+However, for any value above or equal to 0x05, the value is a literal number.
+How do we represent 0 then? Easy. Any literal is subtracted from 0x05 to get the
+number it represents, so 0x05 means the number 0. 0x06 means the number 1. This
+means that argument B's value is 8 - 5, which is 3.
+
+So the fully decoded instruction is now...
+
+Set the contents in register C to the value 3.
+
+Or in assembly...
+
+SET C 3
+
+That's it! Easy once you get the hang of it.
+
+
+EXTRA:
+
+How does the code do all the decoding?
+
+If we represent the hex instruction as bits, we get a format like this:
+
+ooooaaaaaaaaaaaabbbbbbbbbbbb
+
+(o = opcode, a = argument a, and b = argument b)
+
+To get the opcode we must count the number of bits from the left before the
+first o. If you are lazy, I will do it for you. The answer is 24 bits.
+
+We must do something called a bit shift, which is getting rid of a certain
+number of bits in a specified direction. We want to move them right. If "word"
+is defined as the hex instruction above, this would be accomplished with this:
+
+opcode = word >> 24
+
+There is also a process called masking, which is a lot like a logical AND
+The value is 1 only if both values are 1. It looks like this:
+
+ooooaaaaaaaaaaaabbbbbbbbbbbb
+0000000000000000111111111111
+
+Which will give us only b, this can be accomplished with a bit shift but the
+next example becomes easier if this is done with a mask.
+
+The value of 111111111111 = 2047, so a mask would look like this, also assuming
+that "word" is defined as the hex instruction above.
+
+b = word & 2047
+
+The two processes can be mixed together to get the value of a. The first step is
+to remove the b argument by shifting, then remove the opcode by masking.
+Let's do that shift now.
+
+ooooaaaaaaaaaaaabbbbbbbbbbbb
+
+We are removing 12 bits to the right, so that would look like this:
+
+a = word >> 12
+
+or, in bit form:
+
+ooooaaaaaaaaaaaa
+
+Now to remove the opcode, this can be done by masking:
+
+ooooaaaaaaaaaaaa
+0000111111111111
+
+so our code to get the a argument now looks like this:
+
+a = (word >> 12) & 2047
+
+The parentheses are required to make sure the shift and mask happen in the right
+order.
+
+So all our instruction decoding code looks like this now:
+
+opcode = word >> 24
+b = word & 2047
+a = (word >> 12) & 2047
+
+which can be found in the vm_execute function inside of vm.c
+
+Thank you,
+AndyRoth
