@@ -14,7 +14,7 @@ vm_state *vm_new(void)
     state->usedMemory = 0;
     
     /* Make sure everything is allocated */
-    if (!state->registers && !state->memory && !state->pc)
+    if (!state || !state->registers || !state->memory)
         vm_error(state, "Not enough free memory");
     
     return state;
@@ -76,7 +76,15 @@ word *get_value(vm_state *state, word aWord, word *sink)
 {
     if (aWord < 0x05) /* A register value */
     {
-        return &state->registers[aWord]; /* Return the value of the register */
+		if (aWord <= REGISTER_COUNT)
+		{
+        	return &state->registers[aWord]; /* Return the value of the register */
+		}
+		else
+		{
+			vm_error(state, "Register does not exist");
+			return NULL;
+		}
     }
     else /* A literal value */
     {
@@ -110,7 +118,8 @@ void vm_execute(vm_state *state, word *instruction)
     valA = get_value(state, a, sinkA);
     valB = get_value(state, b, sinkB);
     
-    switch (opcode) {
+    switch (opcode)
+	{
         case OP_SET:
         {
             *valA = *valB;
