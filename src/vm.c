@@ -7,11 +7,11 @@
 vm_state *vm_new(void)
 {
     /* Allocate space for vm */
-    vm_state *state = (vm_state *) malloc(sizeof(vm_state));
+    vm_state *state = malloc(sizeof(vm_state));
     
     /* Allocate space for the registers and the RAM */
-    state->registers = (word *) calloc(REGISTER_COUNT, sizeof(word));
-    state->memory = (word *) calloc(MEMORY_WORD_COUNT, sizeof(word));
+    state->registers = calloc(REGISTER_COUNT, sizeof(word));
+    state->memory = calloc(MEMORY_WORD_COUNT, sizeof(word));
     state->pc = 0;
     
     /* Initialize anything else the virtual machine struct needs */
@@ -111,8 +111,8 @@ void vm_execute(vm_state *state, word *instruction)
     word *valB; /* Declared here to satisfy ANSI C requirements */
     
     /* Allocate memory for the sinks */
-    word *sinkA = (word *) malloc(sizeof(word));
-    word *sinkB = (word *) malloc(sizeof(word));
+    word *sinkA = malloc(sizeof(word));
+    word *sinkB = malloc(sizeof(word));
     
     /* check if the sinks were allocated */
     if (!sinkA || !sinkB)
