@@ -116,104 +116,70 @@ void vm_execute(vm_state *state, word *instruction)
     switch (opcode)
 	{
         case OP_SET:
-        {
             *valA = *valB;
-            
             printf("SET %#x %#x\n", a, b);
-            
             break;
-        }
+
         case OP_ADD:
-        {
             *valA = *valA + *valB;
-            
             printf("ADD %#x %#x\n", *valA, *valB);
-            
             break;
-        }
+
         case OP_SUB:
-        {
             *valA = *valA - *valB;
-            
             printf("SUB %#x %#x\n", *valA, *valB);
-            
             break;
-        }
+
         case OP_MULT:
-        {
             *valA = *valA * *valB;
-            
             printf("MULT %#x %#x\n", *valA, *valB);
-            
             break;
-        }
+
         case OP_DIV:
-        {
             *valA = *valA / *valB;
-            
             printf("DIV %#x %#x\n", *valA, *valB);
-            
             break;
-        }
+
         case OP_MOD:
-        {
             *valA = *valA % *valB;
-            
             printf("MOD %#x %#x\n", *valA, *valB);
-            
             break;
-        }
+
         case OP_STORE:
-        {
             /* Set the memory contents to argument B's value */
             state->memory[*valA + state->usedMemory] = *valB;
-            
             printf("STORE %#x %#x\n", *valA, *valB);
-            
             break;
-        }
+
         case OP_GET:
-        {
             /* Set argument A's value to the memory contents */
             *valA = state->memory[*valB + state->usedMemory];
-            
             printf("GET %#x %#x\n", *valA, *valB);
-            
             break;
-        }
+
         case OP_JMP:
-        {
             /* Set PC to a new location */
             state->pc = *valA - 1; /* Subtract 1 to counteract pc increment */
-            
             printf("JMP %#x\n", *valA);
-            
             break;
-        }
+
         case OP_IF:
-        {
             if (*valA != *valB) /* Check if the values are different */
                 state->pc++; /* Skip the next instruction */
             
             printf("IF %#x %#x\n", *valA, *valB);
-            
             break;
-        }
+
         case OP_IFN:
-        {
             if (*valA == *valB) /* Check if the values are equal */
                 state->pc++; /* Skip the next instruction */
             
             printf("IFN %#x %#x\n", *valA, *valB);
-            
             break;
-        }
+
         default:
-        {
             vm_error(state, "Unknown opcode: %#x", opcode);
-            
             break;
-        }
     }
     
     /* Free the sinks to avoid a memory leak */
