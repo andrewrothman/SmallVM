@@ -3,11 +3,11 @@
 vm_state *vm_new(void)
 {
     /* Allocate space for vm */
-    vm_state *state = (vm_state *) malloc(sizeof(vm_state));
+    vm_state *state = malloc(sizeof(vm_state));
     
     /* Allocate space for the registers and the RAM */
-    state->registers = (word *) calloc(REGISTER_COUNT, sizeof(word));
-    state->memory = (word *) calloc(MEMORY_WORD_COUNT, sizeof(word));
+    state->registers = calloc(REGISTER_COUNT, sizeof(word));
+    state->memory = calloc(MEMORY_WORD_COUNT, sizeof(word));
     state->pc = 0;
     
     /* Initialize anything else the virtual machine struct needs */
