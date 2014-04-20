@@ -101,17 +101,12 @@ void vm_execute(vm_state *state, word *instruction)
     word *valA; /* Declared here to satisfy ANSI C requirements */
     word *valB; /* Declared here to satisfy ANSI C requirements */
     
-    /* Allocate memory for the sinks */
-    word *sinkA = malloc(sizeof(word));
-    word *sinkB = malloc(sizeof(word));
-    
-    /* check if the sinks were allocated */
-    if (!sinkA || !sinkB)
-        vm_error(state, "Not enough free memory");
+    word sinkA;
+    word sinkB;
     
     /* Get the values from the arguments */
-    valA = get_value(state, a, sinkA);
-    valB = get_value(state, b, sinkB);
+    valA = get_value(state, a, &sinkA);
+    valB = get_value(state, b, &sinkB);
     
     switch (opcode)
 	{
@@ -181,10 +176,6 @@ void vm_execute(vm_state *state, word *instruction)
             vm_error(state, "Unknown opcode: %#x", opcode);
             break;
     }
-    
-    /* Free the sinks to avoid a memory leak */
-    free(sinkA);
-    free(sinkB);
 }
 
 void vm_load(vm_state *state, word *instrs, int count)
