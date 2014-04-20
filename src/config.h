@@ -3,7 +3,7 @@
 
 #include <stdint.h> /* int32_t */
 
-#define REGISTER_COUNT 0x05 /* The number of registers */
+#define REGISTER_COUNT 5 /* The number of registers */
 #define MEMORY_WORD_COUNT 20 /* The number of memory words */
 
 /* A word is just a 32 bit integer */
