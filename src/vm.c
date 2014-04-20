@@ -92,11 +92,11 @@ word *get_value(vm_state *state, word aWord, word *sink)
 void vm_execute(vm_state *state, word *instruction)
 {
     /* Opcode is the word right shifted */
-    word opcode = *instruction >> 24;
+	word opcode = EXTRACT_OPCODE(*instruction);
     /* A argument is the word right shifted and masked */
-    word a = (*instruction >> 12) & 2047;
+	word a = EXTRACT_ARG_A(*instruction);
     /* B argument is the word masked */
-    word b = *instruction & 2047;
+	word b = EXTRACT_ARG_B(*instruction);
     
     word *valA; /* Declared here to satisfy ANSI C requirements */
     word *valB; /* Declared here to satisfy ANSI C requirements */

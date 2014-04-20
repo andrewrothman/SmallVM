@@ -9,6 +9,10 @@
 /* A word is just a 32 bit integer */
 typedef int32_t word;
 
+#define EXTRACT_OPCODE(instruction) ((instruction) >> 24)
+#define EXTRACT_ARG_A(instruction) (((instruction) >> 12) & 2047)
+#define EXTRACT_ARG_B(instruction) ((instruction) & 2047)
+
 #define OP_SET     0x01 /* Sets a register to a value or to the contents of another register */
 #define OP_ADD     0x02 /* Adds two values or register contents */
 #define OP_SUB     0x03 /* Subtracts two values or register contents */
