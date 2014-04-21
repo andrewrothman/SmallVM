@@ -1,13 +1,17 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdarg.h>
+
 #include "vm.h"
 
 vm_state *vm_new(void)
 {
     /* Allocate space for vm */
-    vm_state *state = (vm_state *) malloc(sizeof(vm_state));
+    vm_state *state = malloc(sizeof(vm_state));
     
     /* Allocate space for the registers and the RAM */
-    state->registers = (word *) calloc(REGISTER_COUNT, sizeof(word));
-    state->memory = (word *) calloc(MEMORY_WORD_COUNT, sizeof(word));
+    state->registers = calloc(REGISTER_COUNT, sizeof(word));
+    state->memory = calloc(MEMORY_WORD_COUNT, sizeof(word));
     state->pc = 0;
     
     /* Initialize anything else the virtual machine struct needs */
@@ -74,156 +78,104 @@ void vm_error(vm_state *state, char *message, ...)
 /* Get the value of either a register or a literal */
 word *get_value(vm_state *state, word aWord, word *sink)
 {
-    if (aWord < 0x05) /* A register value */
-    {
-		if (aWord <= REGISTER_COUNT)
-		{
-        	return &state->registers[aWord]; /* Return the value of the register */
-		}
-		else
-		{
-			vm_error(state, "Register does not exist");
-			return NULL;
-		}
-    }
-    else /* A literal value */
-    {
-        *sink = aWord - 0x05; /* Fix offset and return the value */
-        
-        return sink;
-    }
+	if (aWord <= REGISTER_COUNT) /* A register value */
+	{
+		return &state->registers[aWord]; /* Return the value of the register */
+	}
+	else /* A literal value */
+	{
+		*sink = aWord - REGISTER_COUNT; /* Fix offset and return the value */
+		return sink;
+	}
 }
 
 void vm_execute(vm_state *state, word *instruction)
 {
     /* Opcode is the word right shifted */
-    word opcode = *instruction >> 24;
+	word opcode = EXTRACT_OPCODE(*instruction);
     /* A argument is the word right shifted and masked */
-    word a = (*instruction >> 12) & 2047;
+	word a = EXTRACT_ARG_A(*instruction);
     /* B argument is the word masked */
-    word b = *instruction & 2047;
+	word b = EXTRACT_ARG_B(*instruction);
     
     word *valA; /* Declared here to satisfy ANSI C requirements */
     word *valB; /* Declared here to satisfy ANSI C requirements */
     
-    /* Allocate memory for the sinks */
-    word *sinkA = (word *) malloc(sizeof(word));
-    word *sinkB = (word *) malloc(sizeof(word));
-    
-    /* check if the sinks were allocated */
-    if (!sinkA || !sinkB)
-        vm_error(state, "Not enough free memory");
+    word sinkA;
+    word sinkB;
     
     /* Get the values from the arguments */
-    valA = get_value(state, a, sinkA);
-    valB = get_value(state, b, sinkB);
+    valA = get_value(state, a, &sinkA);
+    valB = get_value(state, b, &sinkB);
     
     switch (opcode)
 	{
         case OP_SET:
-        {
             *valA = *valB;
-            
             printf("SET %#x %#x\n", a, b);
-            
             break;
-        }
+
         case OP_ADD:
-        {
             *valA = *valA + *valB;
-            
             printf("ADD %#x %#x\n", *valA, *valB);
-            
             break;
-        }
+
         case OP_SUB:
-        {
             *valA = *valA - *valB;
-            
             printf("SUB %#x %#x\n", *valA, *valB);
-            
             break;
-        }
+
         case OP_MULT:
-        {
             *valA = *valA * *valB;
-            
             printf("MULT %#x %#x\n", *valA, *valB);
-            
             break;
-        }
+
         case OP_DIV:
-        {
             *valA = *valA / *valB;
-            
             printf("DIV %#x %#x\n", *valA, *valB);
-            
             break;
-        }
+
         case OP_MOD:
-        {
             *valA = *valA % *valB;
-            
             printf("MOD %#x %#x\n", *valA, *valB);
-            
             break;
-        }
+
         case OP_STORE:
-        {
             /* Set the memory contents to argument B's value */
             state->memory[*valA + state->usedMemory] = *valB;
-            
             printf("STORE %#x %#x\n", *valA, *valB);
-            
             break;
-        }
+
         case OP_GET:
-        {
             /* Set argument A's value to the memory contents */
             *valA = state->memory[*valB + state->usedMemory];
-            
             printf("GET %#x %#x\n", *valA, *valB);
-            
             break;
-        }
+
         case OP_JMP:
-        {
             /* Set PC to a new location */
             state->pc = *valA - 1; /* Subtract 1 to counteract pc increment */
-            
             printf("JMP %#x\n", *valA);
-            
             break;
-        }
+
         case OP_IF:
-        {
             if (*valA != *valB) /* Check if the values are different */
                 state->pc++; /* Skip the next instruction */
             
             printf("IF %#x %#x\n", *valA, *valB);
-            
             break;
-        }
+
         case OP_IFN:
-        {
             if (*valA == *valB) /* Check if the values are equal */
                 state->pc++; /* Skip the next instruction */
             
             printf("IFN %#x %#x\n", *valA, *valB);
-            
             break;
-        }
+
         default:
-        {
             vm_error(state, "Unknown opcode: %#x", opcode);
-            
             break;
-        }
     }
-    
-    /* Free the sinks to avoid a memory leak */
-    free(sinkA);
-    free(sinkB);
 }
 
 void vm_load(vm_state *state, word *instrs, int count)

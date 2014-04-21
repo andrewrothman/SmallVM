@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "../src/vm.h"
 
 int main(void)

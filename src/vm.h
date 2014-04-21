@@ -1,15 +1,7 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdarg.h>
-#include <stdint.h> /* int32_t */
+#ifndef VM_H
+#define VM_H
 
-#include "opcodes.h"
-
-#define REGISTER_COUNT 5 /* The number of registers */
-#define MEMORY_WORD_COUNT 20 /* The number of memory words */
-
-/* A word is just a 32 bit integer */
-typedef int32_t word;
+#include "config.h"
 
 /* State struct */
 typedef struct
@@ -27,3 +19,5 @@ void vm_execute(vm_state *state, word *instruction); /* Executes an instruction 
 void vm_load(vm_state *state, word *instrs, int count); /* Loads instructions into memory */
 void vm_run(vm_state *state); /* Runs from the begining of memory */
 void vm_error(vm_state *state, char *message, ...); /* Cleans up after an error */
+
+#endif /* VM_H */

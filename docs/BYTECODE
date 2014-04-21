@@ -14,7 +14,7 @@ Starting from the beginning, we can decode this instruction
 
 So now, we can tell that 01 is being called with the arguments 002 and 006.
 
-As we can see in opcodes.h, the value 0x01, or 01, is the opcode for the SET
+As we can see in config.h, the value 0x01, or 01, is the opcode for the SET
 instruction. Now we know that SET is being called on two values, 002, and 006.
 
 The arguments take a little more work decoding...
