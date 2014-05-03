@@ -74,21 +74,14 @@ void vm_error(vm_state *state, char *message, ...)
 /* Get the value of either a register or a literal */
 word *get_value(vm_state *state, word aWord, word *sink)
 {
-    if (aWord < 0x05) /* A register value */
+    if (aWord < REGISTER_COUNT) /* A register value */
     {
-		if (aWord <= REGISTER_COUNT)
-		{
-        	return &state->registers[aWord]; /* Return the value of the register */
-		}
-		else
-		{
-			vm_error(state, "Register does not exist");
-			return NULL;
-		}
+		return &state->registers[aWord]; /* Return the value of the register */
     }
     else /* A literal value */
     {
-        *sink = aWord - 0x05; /* Fix offset and return the value */
+		*sink = aWord - REGISTER_COUNT; /* Fix offset and return the value */
+		return sink;
         
         return sink;
     }
