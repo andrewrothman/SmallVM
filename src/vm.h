@@ -1,3 +1,6 @@
+#ifndef VM_H
+#define VM_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -27,3 +30,5 @@ void vm_execute(vm_state *state, word *instruction); /* Executes an instruction 
 void vm_load(vm_state *state, word *instrs, int count); /* Loads instructions into memory */
 void vm_run(vm_state *state); /* Runs from the begining of memory */
 void vm_error(vm_state *state, char *message, ...); /* Cleans up after an error */
+
+#endif /* VM_H */
