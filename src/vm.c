@@ -82,8 +82,6 @@ word *get_value(vm_state *state, word aWord, word *sink)
     {
 		*sink = aWord - REGISTER_COUNT; /* Fix offset and return the value */
 		return sink;
-        
-        return sink;
     }
 }
 
